@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" width="1200" height="640" shape-rendering="crispEdges" font-family="'Courier New', monospace">
+  <rect width="1200" height="640" fill="#2b2b33"/>
+  <text x="40" y="58" fill="#ffffff" font-size="30" font-weight="700">How Blockwise learns a team</text>
+  <text x="40" y="92" fill="#b9b9c4" font-size="19">Recall before every review. Retain every human verdict. Reflect to write the playbook.</text>
+
+  <!-- Browser app -->
+  <rect x="40" y="140" width="330" height="400" fill="#c6c6c6" stroke="#1e1e1e" stroke-width="4"/>
+  <rect x="44" y="144" width="322" height="4" fill="#ffffff"/><rect x="44" y="532" width="322" height="4" fill="#555"/>
+  <text x="62" y="186" fill="#1e1e1e" font-size="22" font-weight="700">Blockwise (browser)</text>
+  <text x="62" y="214" fill="#3a3a3a" font-size="16">static site on GitHub Pages</text>
+  <rect x="62" y="238" width="286" height="54" fill="#f4f1e8" stroke="#1e1e1e" stroke-width="3"/>
+  <text x="78" y="271" fill="#1e1e1e" font-size="18">1. Pick a pull request</text>
+  <rect x="62" y="306" width="286" height="54" fill="#f4f1e8" stroke="#1e1e1e" stroke-width="3"/>
+  <text x="78" y="339" fill="#1e1e1e" font-size="18">3. Show review comments</text>
+  <rect x="62" y="374" width="286" height="54" fill="#f4f1e8" stroke="#1e1e1e" stroke-width="3"/>
+  <text x="78" y="407" fill="#1e1e1e" font-size="18">4. Accept / Reject + why</text>
+  <rect x="62" y="442" width="286" height="74" fill="#f2c94c" stroke="#a07a12" stroke-width="3"/>
+  <text x="78" y="472" fill="#3b2c00" font-size="18">"Team knowledge" XP bar</text>
+  <text x="78" y="498" fill="#3b2c00" font-size="16">grows with every memory</text>
+
+  <!-- Hindsight -->
+  <rect x="820" y="140" width="340" height="400" fill="#c6c6c6" stroke="#1e1e1e" stroke-width="4"/>
+  <rect x="824" y="144" width="332" height="4" fill="#ffffff"/><rect x="824" y="532" width="332" height="4" fill="#555"/>
+  <text x="842" y="186" fill="#1e1e1e" font-size="22" font-weight="700">Hindsight memory bank</text>
+  <text x="842" y="214" fill="#3a3a3a" font-size="16">"blockwise-tiffin"</text>
+  <rect x="842" y="238" width="296" height="64" fill="#5d9e32" stroke="#1e1e1e" stroke-width="3"/>
+  <text x="858" y="266" fill="#ffffff" font-size="18" font-weight="700">world facts</text>
+  <text x="858" y="290" fill="#eaffd9" font-size="15">conventions + their reasons</text>
+  <rect x="842" y="314" width="296" height="64" fill="#3452a8" stroke="#1e1e1e" stroke-width="3"/>
+  <text x="858" y="342" fill="#ffffff" font-size="18" font-weight="700">experiences</text>
+  <text x="858" y="366" fill="#dde6ff" font-size="15">accepted / rejected comments</text>
+  <rect x="842" y="390" width="296" height="64" fill="#a07a12" stroke="#1e1e1e" stroke-width="3"/>
+  <text x="858" y="418" fill="#ffffff" font-size="18" font-weight="700">observations</text>
+  <text x="858" y="442" fill="#fff3cc" font-size="15">"Ravi skips None checks"</text>
+  <text x="842" y="494" fill="#3a3a3a" font-size="15">tags: author:*, kind:*, source:*</text>
+  <text x="842" y="516" fill="#3a3a3a" font-size="15">entities + temporal links</text>
+
+  <!-- LLM -->
+  <rect x="470" y="410" width="250" height="130" fill="#1d1d22" stroke="#000" stroke-width="4"/>
+  <text x="492" y="450" fill="#7ef52a" font-size="20" font-weight="700">LLM (Groq)</text>
+  <text x="492" y="478" fill="#d8d8d8" font-size="15">gpt-oss-120b</text>
+  <text x="492" y="502" fill="#d8d8d8" font-size="15">diff + recalled memories</text>
+  <text x="492" y="524" fill="#d8d8d8" font-size="15">-> JSON comments</text>
+
+  <!-- Arrows -->
+  <g stroke="#7ef52a" stroke-width="6" fill="none">
+    <path d="M370 250 H812"/><path d="M800 238 l14 12 l-14 12"/>
+  </g>
+  <text x="392" y="236" fill="#7ef52a" font-size="16" font-weight="700">2a. recall: files, author, rejections</text>
+
+  <g stroke="#f2c94c" stroke-width="6" fill="none">
+    <path d="M812 300 H560 V402"/><path d="M548 392 l12 14 l12 -14"/>
+  </g>
+  <text x="590" y="292" fill="#f2c94c" font-size="17" font-weight="700">2b. memories [M1..Mn]</text>
+
+  <g stroke="#ffffff" stroke-width="6" fill="none">
+    <path d="M470 470 H420 V333 H378"/><path d="M392 321 l-14 12 l14 12"/>
+  </g>
+
+  <g stroke="#8fd14f" stroke-width="6" fill="none">
+    <path d="M370 400 H780 V380 H812"/><path d="M800 368 l14 12 l-14 12"/>
+  </g>
+  <text x="600" y="392" fill="#8fd14f" font-size="17" font-weight="700">5. retain verdict</text>
+
+  <text x="40" y="600" fill="#b9b9c4" font-size="17">6. reflect: Hindsight synthesizes the team's review playbook from everything it has retained.</text>
+</svg>

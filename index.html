@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Blockwise · the code reviewer that remembers your team</title>
+  <meta name="description" content="A code review agent that learns your team's conventions and rejected suggestions using Hindsight agent memory." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect width='8' height='8' fill='%231e1e1e'/><rect x='1' y='1' width='6' height='6' fill='%23c6c6c6'/><rect x='2' y='2' width='4' height='4' fill='%235d9e32'/><rect x='3' y='3' width='2' height='2' fill='%231e1e1e'/></svg>" />
+  <link rel="preload" href="assets/fonts/press-start-2p.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="assets/fonts/vt323.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span id="logo" aria-hidden="true"></span>
+      <div>
+        <h1>Blockwise</h1>
+        <p>The code reviewer that remembers your team</p>
+      </div>
+    </div>
+
+    <div class="xp" aria-live="polite">
+      <div class="xp-label">
+        <span>Team knowledge <span class="xp-level" id="xpLevel">Lv 0</span></span>
+        <span id="xpCount">0 memories</span>
+      </div>
+      <div class="xp-bar" role="progressbar" aria-label="Memories until next level" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" id="xpBar">
+        <div class="xp-fill" id="xpFill"></div>
+      </div>
+    </div>
+
+    <button class="btn" id="openSettings" type="button">Settings</button>
+  </header>
+
+  <main class="layout">
+    <!-- Left: pull request inventory -->
+    <aside class="panel prs" aria-labelledby="prsHeading">
+      <h2 id="prsHeading">Pull requests</h2>
+      <div class="slots" id="slots"></div>
+
+      <div class="quest">
+        <h2>Get started</h2>
+        <ol id="quest">
+          <li data-step="keys">Add your Groq and Hindsight keys in Settings</li>
+          <li data-step="seed">Teach Blockwise the team's review history</li>
+          <li data-step="compare">Open PR #112 and review it side by side</li>
+          <li data-step="feedback">Reject one comment with a reason, then review again</li>
+        </ol>
+        <div class="stack">
+          <button class="btn primary" id="seedBtn" type="button">Teach team history</button>
+          <button class="linkish" id="resetBtn" type="button">Delete all memories</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Center: diff and review -->
+    <div class="center">
+      <section class="panel" aria-labelledby="prTitle">
+        <div class="pr-head">
+          <div>
+            <div class="pr-title" id="prTitle">Pick a pull request</div>
+            <div class="pr-meta" id="prMeta"></div>
+            <div class="pr-note" id="prNote"></div>
+          </div>
+          <div class="controls">
+            <div class="seg" role="group" aria-label="Review mode">
+              <button class="btn small" data-mode="memory" aria-pressed="true" type="button">With memory</button>
+              <button class="btn small" data-mode="generic" aria-pressed="false" type="button">Without</button>
+              <button class="btn small" data-mode="compare" aria-pressed="false" type="button">Side by side</button>
+            </div>
+            <button class="btn primary" id="runBtn" type="button">Review PR</button>
+          </div>
+        </div>
+        <pre class="diff" id="diff" tabindex="0" aria-label="Pull request diff"></pre>
+      </section>
+
+      <section class="panel" aria-labelledby="reviewHeading">
+        <h2 id="reviewHeading">Review</h2>
+        <div id="results" class="results">
+          <div class="empty">
+            <strong>No review yet</strong>
+            Pick a pull request and press Review PR. Try "Side by side" to see what memory changes.
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Right: memory -->
+    <aside class="panel memory" aria-labelledby="memHeading">
+      <h2 id="memHeading">Memory</h2>
+      <div class="tabs" role="tablist">
+        <button class="btn" role="tab" aria-selected="true" aria-pressed="true" data-tab="learned" type="button">Learned</button>
+        <button class="btn" role="tab" aria-selected="false" aria-pressed="false" data-tab="playbook" type="button">Playbook</button>
+        <button class="btn" role="tab" aria-selected="false" aria-pressed="false" data-tab="log" type="button">Activity</button>
+      </div>
+
+      <div class="tabpanel" data-panel="learned" role="tabpanel">
+        <p class="muted" id="learnedHint">Facts Hindsight extracted from reviews and feedback. Newest first.</p>
+        <button class="btn small" id="refreshMem" type="button">Refresh</button>
+        <ul class="mem-list" id="memList" style="margin-top:10px"></ul>
+      </div>
+
+      <div class="tabpanel" data-panel="playbook" role="tabpanel" hidden>
+        <p class="muted">Hindsight reflects over everything it has learned and writes the team's review playbook.</p>
+        <button class="btn small primary" id="reflectBtn" type="button">Write playbook</button>
+        <div class="playbook" id="playbook" style="margin-top:10px" hidden></div>
+      </div>
+
+      <div class="tabpanel" data-panel="log" role="tabpanel" hidden>
+        <p class="muted">Every retain, recall and reflect call, live.</p>
+        <ul class="log" id="log"></ul>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Settings -->
+  <dialog id="settings" aria-labelledby="settingsTitle">
+    <form method="dialog" id="settingsForm">
+      <h2 id="settingsTitle">Settings</h2>
+      <p class="muted">Keys are saved only in this browser and sent only to the APIs below.</p>
+      <div class="row">
+        <div class="field">
+          <label for="hsUrl">Hindsight API URL</label>
+          <input id="hsUrl" name="hsUrl" placeholder="https://api.hindsight.vectorize.io" />
+        </div>
+        <div class="field">
+          <label for="hsBank">Memory bank</label>
+          <input id="hsBank" name="hsBank" placeholder="blockwise-tiffin" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="hsKey">Hindsight API key</label>
+        <input id="hsKey" name="hsKey" type="password" autocomplete="off" placeholder="hsk_…" />
+        <small>Create one at ui.hindsight.vectorize.io. Leave empty for a local server without auth.</small>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="llmUrl">LLM API URL</label>
+          <input id="llmUrl" name="llmUrl" placeholder="https://api.groq.com/openai/v1" />
+        </div>
+        <div class="field">
+          <label for="llmModel">Model</label>
+          <input id="llmModel" name="llmModel" list="models" placeholder="openai/gpt-oss-120b" />
+          <datalist id="models">
+            <option value="openai/gpt-oss-120b"></option>
+            <option value="qwen/qwen3-32b"></option>
+            <option value="llama-3.3-70b-versatile"></option>
+          </datalist>
+        </div>
+      </div>
+      <div class="field">
+        <label for="llmKey">LLM API key</label>
+        <input id="llmKey" name="llmKey" type="password" autocomplete="off" placeholder="gsk_…" />
+      </div>
+      <div class="field">
+        <label for="reviewer">Your name (shown on feedback)</label>
+        <input id="reviewer" name="reviewer" placeholder="Priya Raman" />
+      </div>
+      <div class="dialog-actions">
+        <button class="btn" value="cancel" type="submit">Cancel</button>
+        <button class="btn primary" value="save" type="submit">Save settings</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Custom PR -->
+  <dialog id="customDlg" aria-labelledby="customTitle">
+    <form method="dialog" id="customForm">
+      <h2 id="customTitle">Review your own diff</h2>
+      <div class="row">
+        <div class="field">
+          <label for="cTitle">PR title</label>
+          <input id="cTitle" required placeholder="Add loyalty points" />
+        </div>
+        <div class="field">
+          <label for="cAuthor">Author</label>
+          <input id="cAuthor" required list="authors" placeholder="Ravi Kumar" />
+          <datalist id="authors"></datalist>
+        </div>
+      </div>
+      <div class="field">
+        <label for="cDiff">Unified diff</label>
+        <textarea id="cDiff" required placeholder="Paste the output of git diff"></textarea>
+      </div>
+      <div class="dialog-actions">
+        <button class="btn" value="cancel" type="submit" formnovalidate>Cancel</button>
+        <button class="btn primary" value="save" type="submit">Add pull request</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
